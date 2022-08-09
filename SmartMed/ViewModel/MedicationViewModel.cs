@@ -1,4 +1,4 @@
-﻿namespace SmartMed.Dto
+﻿namespace SmartMed.ViewModels
 {
     public class MedicationViewModel
     {

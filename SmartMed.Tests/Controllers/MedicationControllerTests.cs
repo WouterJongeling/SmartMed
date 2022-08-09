@@ -5,9 +5,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using SmartMed.Controllers;
 using SmartMed.Dbo;
-using SmartMed.Dto;
+using SmartMed.ViewModels;
 using SmartMed.Models;
 using SmartMed.Repositories;
+using SmartMed.Validators;
 using System;
 using System.Linq;
 
@@ -19,6 +20,7 @@ namespace SmartMed.Tests.Controllers
         private IFixture _fixture;
         private Mock<IMapper> _mapperMock;
         private Mock<IRepository<Medication>> _repositoryMock;
+        private Mock<IValidator<Medication>> _validatorMock;
         private MedicationController _controller;
 
         [TestInitialize]
@@ -27,7 +29,9 @@ namespace SmartMed.Tests.Controllers
             _fixture = new Fixture();
             _mapperMock = new Mock<IMapper>();
             _repositoryMock = new Mock<IRepository<Medication>>();
-            _controller = new MedicationController(_mapperMock.Object, _repositoryMock.Object);
+            _validatorMock = new Mock<IValidator<Medication>>();
+            _controller = new MedicationController(_mapperMock.Object, _repositoryMock.Object, _validatorMock.Object);
+            _validatorMock.Setup(v => v.Validate(It.IsAny<Medication>())).Returns(true);
         }
 
         [TestMethod]
@@ -68,6 +72,19 @@ namespace SmartMed.Tests.Controllers
             // Assert
             result.Should().Be(viewModel);
             _repositoryMock.Verify(r => r.Add(entity1), Times.Once);
+        }
+
+        [TestMethod]
+        public void Create_ShouldThrow_WhenInvalid()
+        {
+            // Arrange
+            var createModel = _fixture.Create<MedicationCreateModel>();
+            var entity = _fixture.Create<Medication>();
+            _mapperMock.Setup(m => m.Map<Medication>(createModel)).Returns(entity);
+            _validatorMock.Setup(v => v.Validate(entity)).Returns(false);
+
+            // Act & Assert
+            _controller.Invoking(c => c.CreateMedication(createModel)).Should().Throw<ValidationException>();
         }
 
         [TestMethod]

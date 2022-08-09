@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using SmartMed.Dbo;
-using SmartMed.Dto;
+using SmartMed.ViewModels;
 using SmartMed.Models;
 
 namespace SmartMed

@@ -3,7 +3,7 @@ using AutoMapper;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SmartMed.Dbo;
-using SmartMed.Dto;
+using SmartMed.ViewModels;
 using SmartMed.Models;
 using System;
 

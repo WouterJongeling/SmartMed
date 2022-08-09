@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using SmartMed.ViewModels;
 using SmartMed.Models;
 using SmartMed.Repositories;
+using SmartMed.Validators;
 
 namespace SmartMed
 {
@@ -13,6 +15,9 @@ namespace SmartMed
 
             // Repositories
             services.AddSingleton<IRepository<Medication>, MedicationRepositoryInMemory>();
+
+            // Validators
+            services.AddTransient<IValidator<Medication>, MedicationValidator>();
         }
     }
 }

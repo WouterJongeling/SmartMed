@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using SmartMed.Dto;
+using SmartMed.ViewModels;
 using SmartMed.Models;
 using SmartMed.Repositories;
+using SmartMed.Validators;
 
 namespace SmartMed.Controllers
 {
@@ -12,11 +13,13 @@ namespace SmartMed.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IRepository<Medication> _repository;
+        private readonly IValidator<Medication> _validator;
 
-        public MedicationController(IMapper mapper, IRepository<Medication> repository)
+        public MedicationController(IMapper mapper, IRepository<Medication> repository, IValidator<Medication> validator)
         {
             _mapper = mapper;
             _repository = repository;
+            _validator = validator;
         }
 
         [HttpGet]
@@ -27,9 +30,13 @@ namespace SmartMed.Controllers
         }
 
         [HttpPost]
-        public MedicationViewModel CreateMedication(MedicationCreateModel medication)
+        public MedicationViewModel CreateMedication(MedicationCreateModel createModel)
         {
-            Medication entity = _mapper.Map<Medication>(medication);
+            Medication entity = _mapper.Map<Medication>(createModel);
+            if(!_validator.Validate(entity))
+            {
+                throw new ValidationException();
+            }
             Medication result = _repository.Add(entity);
             MedicationViewModel viewModel = _mapper.Map<MedicationViewModel>(result);
             return viewModel;
